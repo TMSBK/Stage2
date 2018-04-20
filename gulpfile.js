@@ -5,8 +5,9 @@ var browserSync = require('browser-sync').create();
 var eslint = require('gulp-eslint');
 var jasmine = require('gulp-jasmine-phantom');
 var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
+var uglify = require('gulp-uglify-es');
 var babel = require('gulp-babel');
+var gutil = require('gutil');
  
  
 gulp.task('default', ['copy-html', 'copy-images', 'styles','lint', 'scripts-dist'], function(done) {
@@ -40,6 +41,7 @@ gulp.task('scripts-dist', function() {
         .pipe(babel())
         .pipe(concat('all.js'))
         .pipe(uglify())
+        .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
         .pipe(gulp.dest('dist/js'));
 });
  
