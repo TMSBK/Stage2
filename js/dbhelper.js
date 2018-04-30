@@ -1,6 +1,7 @@
 /**
  * Common database helper functions.
  */
+
 class DBHelper {
 
   /**
@@ -15,49 +16,26 @@ class DBHelper {
   /**
    * Fetch all restaurants. Working on!
    */
-  static fetchRestaurants(callback) {
+    static fetchRestaurants(callback) {
 
         fetch(DBHelper.DATABASE_URL, {
-        }).then(function(response) {
-            return response.json()
-                .then(function(response) {
-                    restaurantArray();
-                    console.log(response);
-                    debugger; // work with the returned response
-                })
-                .catch(requestError());
-        });
-
-        function restaurantArray(response) {
-            if (response.status === 200) { // Got a success response from server!
-                const restaurants = response;
-                callback(null, restaurants);
-            } else { // Oops!. Got an error from server.
-                const error = (`Request failed. Returned status of ${response.status}`);
-                callback(error, null);
-            }
+        })
+        .then(response => response.json()) 
+        .then(restaurantsJSON => {
+            const restaurants = restaurantsJSON; 
+            restaurants.forEach(restaurant => {
+                restaurant.photo_small_1x = `${restaurant.id}-300_1x.jpg`;
+                restaurant.photo_large_1x = `${restaurant.id}-600_1x.jpg`;
+            });
+            callback(null, restaurants);
+        }) 
+        .catch(e => requestError(e));
+        
+        function requestError(e) {
+            callback(e, null);
         }
 
-        function requestError(response) {
-            console.log(response.status);
-        }
-
-
-
-    /*let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
-    };
-    xhr.send();
-  }*/
+    }
 
   /**
    * Fetch a restaurant by its ID.

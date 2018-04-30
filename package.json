@@ -28,6 +28,7 @@
     "gulp-sass": "^3.1.0",
     "gulp-uglify-es": "^1.0.1",
     "gutil": "^1.6.4",
+    "idb": "^2.1.1",
     "uglify-js": "^3.3.19"
   },
   "scripts": {

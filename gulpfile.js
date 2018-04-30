@@ -5,7 +5,7 @@ var browserSync = require('browser-sync').create();
 var eslint = require('gulp-eslint');
 var jasmine = require('gulp-jasmine-phantom');
 var concat = require('gulp-concat');
-var uglify = require('gulp-uglify-es');
+let uglify = require('gulp-uglify-es').default;
 var babel = require('gulp-babel');
 var gutil = require('gutil');
  
