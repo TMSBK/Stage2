@@ -13,8 +13,45 @@ class DBHelper {
     return `http://localhost:${port}/restaurants`;
   }
 
+  /** used snippets from here: https://github.com/udacity/mws-restaurant-stage-3/pull/3/files **/
+
+  static createRestaurantsStore(restaurants) {
+  // Get the compatible IndexedDB version
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+
+    // Open (or create) the database
+    var open = indexedDB.open('RestaurantDB', 1);
+
+    // Create the schema
+    open.onupgradeneeded = function() {
+      var db = open.result;
+      db.createObjectStore('RestaurantStore', { keyPath: 'id' });
+    };
+
+    open.onerror = function(err) {
+      console.error('Something went wrong with IndexDB: ' + err.target.errorCode);
+    };
+
+    open.onsuccess = function() {
+      // Start a new transaction
+      var db = open.result;
+      var tx = db.transaction('RestaurantStore', 'readwrite');
+      var store = tx.objectStore('RestaurantStore');
+
+      // Add the restaurant data
+      restaurants.forEach(function(restaurant) {
+        store.put(restaurant);
+      });
+
+      // Close the db when the transaction is done
+      tx.oncomplete = function() {
+        db.close();
+      };
+    };
+  }
+
   /**
-   * Fetch all restaurants. Working on!
+   * Fetch all restaurants.
    */
     static fetchRestaurants(callback) {
 
@@ -22,11 +59,12 @@ class DBHelper {
         })
         .then(response => response.json()) 
         .then(restaurantsJSON => {
-            const restaurants = restaurantsJSON; 
+            let restaurants = restaurantsJSON; 
             restaurants.forEach(restaurant => {
                 restaurant.photo_small_1x = `${restaurant.id}-300_1x.jpg`;
                 restaurant.photo_large_1x = `${restaurant.id}-600_1x.jpg`;
             });
+            DBHelper.createRestaurantsStore(restaurants); // Cache restaurants
             callback(null, restaurants);
         }) 
         .catch(e => requestError(e));

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link rel="manifest" href="/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#252831">
     <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
     <link rel="stylesheet" href="css/styles.css">
     <title>Restaurant Reviews</title>
@@ -20,10 +22,12 @@
       <section>
         <div class="filter-options">
           <h2>Filter Results</h2>
-          <select id="neighborhoods-select" name="neighborhoods" role="Combobox" onchange="updateRestaurants()">
+          <label for="neighborhoods-select">neighborhoods</label>
+          <select id="neighborhoods-select" name="neighborhoods" role="listbox" onchange="updateRestaurants()">
             <option value="all">All Neighborhoods</option>
           </select>
-          <select id="cuisines-select" name="cuisines" role="Combobox" onchange="updateRestaurants()">
+          <label for="cuisines-select">cuisines</label>
+          <select id="cuisines-select" name="cuisines" role="listbox" onchange="updateRestaurants()">
             <option value="all">All Cuisines</option>
           </select>
         </div>
@@ -36,7 +40,6 @@
     <script src="js/dbhelper.js"></script>
     <!--<script src="js/all.js"></script>-->
     <script src="js/main.js"></script>
-    <script type="module" src="idb.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByxkv2oqh-zoPkKlUT5kIqqBVWljPoOng&libraries=places&callback=initMap"></script>
     <script src="js/indexController.js"></script>
   </body>
