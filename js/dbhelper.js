@@ -6,44 +6,41 @@ class DBHelper {
 
   /**
    * Database URL.
-   * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
     const port = 1337; // Change this to your server port
     return `http://localhost:${port}/restaurants`;
   }
 
-  /** used snippets from here: https://github.com/udacity/mws-restaurant-stage-3/pull/3/files **/
+  /** 
+   * For the indexedDB I used snippets and ideas from here: https://github.com/udacity/mws-restaurant-stage-3/pull/3/files 
+   * Author: Sharynne Azhar
+  **/
 
   static createRestaurantsStore(restaurants) {
-  // Get the compatible IndexedDB version
+
     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
 
-    // Open (or create) the database
-    var open = indexedDB.open('RestaurantDB', 1);
+    var open = indexedDB.open('RestaurantDataBase', 1);
 
-    // Create the schema
     open.onupgradeneeded = function() {
       var db = open.result;
-      db.createObjectStore('RestaurantStore', { keyPath: 'id' });
+      db.createObjectStore('RestaurantObjectStore', { keyPath: 'id' });
     };
 
     open.onerror = function(err) {
-      console.error('Something went wrong with IndexDB: ' + err.target.errorCode);
+      console.error('IndexeDB error: ' + err.target.errorCode);
     };
 
     open.onsuccess = function() {
-      // Start a new transaction
       var db = open.result;
-      var tx = db.transaction('RestaurantStore', 'readwrite');
-      var store = tx.objectStore('RestaurantStore');
+      var tx = db.transaction('RestaurantObjectStore', 'readwrite');
+      var store = tx.objectStore('RestaurantObjectStore');
 
-      // Add the restaurant data
       restaurants.forEach(function(restaurant) {
         store.put(restaurant);
       });
 
-      // Close the db when the transaction is done
       tx.oncomplete = function() {
         db.close();
       };
@@ -51,29 +48,29 @@ class DBHelper {
   }
 
   /**
-   * Fetch all restaurants.
-   */
-    static fetchRestaurants(callback) {
+  * Fetch all restaurants.
+  */
 
-        fetch(DBHelper.DATABASE_URL, {
-        })
-        .then(response => response.json()) 
-        .then(restaurantsJSON => {
-            let restaurants = restaurantsJSON; 
-            restaurants.forEach(restaurant => {
-                restaurant.photo_small_1x = `${restaurant.id}-300_1x.jpg`;
-                restaurant.photo_large_1x = `${restaurant.id}-600_1x.jpg`;
-            });
-            DBHelper.createRestaurantsStore(restaurants); // Cache restaurants
-            callback(null, restaurants);
-        }) 
-        .catch(e => requestError(e));
+  static fetchRestaurants(callback) {
+
+    fetch(DBHelper.DATABASE_URL, {
+    })
+    .then(response => response.json()) 
+    .then(restaurantsJSON => {
+        let restaurants = restaurantsJSON; 
+        restaurants.forEach(restaurant => {
+            restaurant.photo_small_1x = `${restaurant.id}-300_1x.jpg`;
+            restaurant.photo_large_1x = `${restaurant.id}-600_1x.jpg`;
+        });
+        DBHelper.createRestaurantsStore(restaurants); // Cache restaurants
+        callback(null, restaurants);
+    }) 
+    .catch(e => requestError(e));
         
-        function requestError(e) {
-            callback(e, null);
-        }
-
+    function requestError(e) {
+        callback(e, null);
     }
+  }
 
   /**
    * Fetch a restaurant by its ID.
