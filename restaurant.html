@@ -32,13 +32,39 @@
         <table id="restaurant-hours" tabindex="0"></table>
       </section>
       <section id="reviews-container">
+        <form name="submitForm" onsubmit="return makeReview()">
+          <input name='name' id="nameInput" placeholder="Your name">
+          <textarea name='comments' placeholder="Your comment" id="comment"></textarea>
+          <div id="ratings">
+            <span id="1" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="1" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="2" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="2" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="3" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="3" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="4" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="4" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="5" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="5" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <p id="ratingSign">Rate the restaurant</p>
+          </div>
+          <button id="submitButton" tpye="submit">Submit</button>
+        </form>
         <ul id="reviews-list"  tabindex="0"></ul>
       </section>
     </main>
     <footer id="footer">
       Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
     </footer>
-    <script src="dist/js/all2.js"></script>
+    <script src="js/dbhelper.js"></script>
+    <script src="js/indexController.js"></script>
+    <script src="js/restaurant_info.js"></script>
+    <!--<script src="dist/js/all2.js"></script>-->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsvl1Oghd7gJbRqST-tTzxxkJtgUd1Cio&libraries=places&callback=initMap"></script>
   </body>
 </html>

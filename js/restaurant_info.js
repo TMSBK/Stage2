@@ -45,6 +45,28 @@ fetchRestaurantFromURL = (callback) => {
   }
 }
 
+fetchReviewsFromURL = (callback) => {
+  if (self.reviews) { // reviews already fetched!
+    callback(null, self.reviews)
+    return;
+  }
+  const id = getParameterByName('id');
+  if (!id) { // no id found in URL
+    error = 'No review id in URL'
+    callback(error, null);
+  } else {
+    DBHelper.fetchReviewsByRestaurantId(id, (error, reviews) => {
+      self.reviews = reviews;
+      if (!reviews) {
+        console.error(error);
+        return;
+      }
+      fillReviewsHTML();
+      callback(null, reviews);
+    });
+  }
+};
+
 /**
  * Create restaurant HTML and add it to the webpage
  */
@@ -106,7 +128,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+const fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -188,4 +210,51 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+};
+
+let radioButtonValue = '';
+
+function ratingTracker(radioButton) {
+    radioButtonValue = radioButton.value;
+    const ratingSign = document.getElementById('ratingSign');
+    ratingSign.textContent = radioButtonValue + ' point';
+
+    for (let i=1; i <= 5; i++) {
+        let radioElement= document.getElementById(i);
+        if (i<=radioButtonValue) {
+            radioElement.classList.add('radioInputSpanBackground');
+        } else {
+            radioElement.classList.remove('radioInputSpanBackground');
+        }
+    }
+}
+
+const makeReview = (restaurant = self.restaurant) => {
+
+  let name = document.getElementById('nameInput').value;
+  let comment = document.getElementById('comment').value;
+  let rating = radioButtonValue;
+  let id = restaurant.id;
+
+  if (name != '' && comment != '') {
+    let review = {
+      restaurant_id: id,
+      name: name,
+      rating: rating,
+      comments: comment,
+    };
+
+    fetch(DBHelper.DATABASE_URL + '/reviews', {
+      method: 'post',
+      body: JSON.stringify(review)
+    })
+    .then(response => response.json())
+    .catch(error => {
+      console.log('Something went wrong submitting your review');
+    });
+
+    window.location.reload();
+  }
+
+  return false;
 }

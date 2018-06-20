@@ -47,30 +47,107 @@ class DBHelper {
     };
   }
 
+  static getCachedData(callback) {
+    var restaurants = [];
+
+    // Get the compatible IndexedDB version
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+    var open = indexedDB.open('RestaurantDataBase', 1);
+
+    open.onsuccess = function() {
+      // Start a new transaction
+      var db = open.result;
+      var tx = db.transaction('RestaurantObjectStore', 'readwrite');
+      var store = tx.objectStore('RestaurantObjectStore');
+      var getData = store.getAll();
+
+      getData.onsuccess = function() {
+        callback(null, getData.result);
+      };
+
+      // Close the db when the transaction is done
+      tx.oncomplete = function() {
+        db.close();
+      };
+    };
+
+  }
+
   /**
   * Fetch all restaurants.
   */
 
   static fetchRestaurants(callback) {
+    if (navigator.onLine) {
 
-    fetch(DBHelper.DATABASE_URL, {
-    })
-    .then(response => response.json()) 
-    .then(restaurantsJSON => {
-        let restaurants = restaurantsJSON; 
-        restaurants.forEach(restaurant => {
-            restaurant.photo_small_1x = `${restaurant.id}-300_1x.jpg`;
-            restaurant.photo_large_1x = `${restaurant.id}-600_1x.jpg`;
+      fetch(DBHelper.DATABASE_URL, {
+      })
+      .then(response => response.json()) 
+      .then(restaurantsJSON => {
+          let restaurants = restaurantsJSON; 
+          restaurants.forEach(restaurant => {
+              restaurant.photo_small_1x = `${restaurant.id}-300_1x.jpg`;
+              restaurant.photo_large_1x = `${restaurant.id}-600_1x.jpg`;
+          });
+          DBHelper.createRestaurantsStore(restaurants); // Cache restaurants
+          callback(null, restaurants);
+      }) 
+      .catch(err => {
+          const error = `Request failed. Returned status of ${err.status}`;
+          callback(error, null);
         });
-        DBHelper.createRestaurantsStore(restaurants); // Cache restaurants
-        callback(null, restaurants);
-    }) 
-    .catch(e => requestError(e));
-        
-    function requestError(e) {
-        callback(e, null);
+
+    } else {
+        console.log('Browser Offline - Using cached data!');
+        DBHelper.getCachedData((error, restaurants) => {
+          if (restaurants.length > 0) {
+            callback(null, restaurants);
+           }
+      });
     }
+  } 
+
+/* 
+Fetching reviews
+*/
+
+  static fetchReviews(callback) {
+    const url = DBHelper.DATABASE_URL + '/reviews';
+    fetch(url)
+    .then(response => response.json())
+    .then(reviewsJSON => {
+      callback(null, reviewsJSON);
+    })
+    .catch(err => {
+      const error = `Request failed. Returned status of ${err.status}`;
+      callback(error, null);
+    });
   }
+
+  static fetchReviewsByRestaurantId(id, callback) {
+    const url = DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id;
+    fetch(url)
+    .then(response => response.json())
+    .then(reviewsJSON => {
+      reviewsJSON = reviewsJSON.sort(function(a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      DBHelper.createReviewsStore(id, reviewsJSON);
+      callback(null, reviewsJSON);
+    })
+    .catch(err => {
+      const error = `Request failed. Returned status of ${err.status}`;
+      callback(error, null);
+    })
+  }
+
+  static addRestaurantToFavorites(restaurantId, isFav, callback) {
+    const url = DBHelper.DATABASE_URL + '/restaurants/' + restaurantId + '/?is_favorite=' + isFav;
+    fetch(url, { method: 'put' })
+    .then(response => callback(null, 1))
+    .catch(err => callback(err, null));
+  }
+
 
   /**
    * Fetch a restaurant by its ID.
