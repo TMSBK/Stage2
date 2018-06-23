@@ -112,33 +112,37 @@ Fetching reviews
 */
 
   static fetchReviews(callback) {
-    const url = DBHelper.DATABASE_URL + '/reviews';
-    fetch(url)
+    if (navigator.onLine) {
+      fetch(DBHelper.DATABASE_URL + '/reviews', {
+      })
+      .then(response => response.json())
+      .then(reviews => {
+        callback(null, reviews);
+      })
+      .catch(err => {
+        const error = `Request failed. Returned status of ${err.status}`;
+        callback(error, null);
+      });
+    } else {
+      console.log('pina');
+    }
+  }
+
+  static fetchReviewsByRestaurantId(id, callback) {
+    fetch(DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id, {
+    })
     .then(response => response.json())
-    .then(reviewsJSON => {
-      callback(null, reviewsJSON);
+    .then(reviews => {
+      reviews = reviews.sort(function(a, b) {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      /*DBHelper.createReviewsStore(id, reviews);*/
+      callback(null, reviews);
     })
     .catch(err => {
       const error = `Request failed. Returned status of ${err.status}`;
       callback(error, null);
     });
-  }
-
-  static fetchReviewsByRestaurantId(id, callback) {
-    const url = DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id;
-    fetch(url)
-    .then(response => response.json())
-    .then(reviewsJSON => {
-      reviewsJSON = reviewsJSON.sort(function(a, b) {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-      DBHelper.createReviewsStore(id, reviewsJSON);
-      callback(null, reviewsJSON);
-    })
-    .catch(err => {
-      const error = `Request failed. Returned status of ${err.status}`;
-      callback(error, null);
-    })
   }
 
   static addRestaurantToFavorites(restaurantId, isFav, callback) {

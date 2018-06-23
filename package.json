@@ -4,6 +4,7 @@
   "description": "--- #### _Three Stage Course Material Project - Restaurant Reviews_",
   "main": "Gruntfile.js",
   "dependencies": {
+    "moment": "^2.22.2",
     "npm": "^5.8.0"
   },
   "devDependencies": {

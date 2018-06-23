@@ -53,14 +53,20 @@
             </span>
             <p id="ratingSign">Rate the restaurant</p>
           </div>
-          <button id="submitButton" tpye="submit">Submit</button>
+          <button id="submitButton" type="submit">Submit</button>
         </form>
+
+        <!--<form onsubmit="return deleteReview(95)">
+          <button type='submit'>Delete</button>
+        </form>-->
+
         <ul id="reviews-list"  tabindex="0"></ul>
       </section>
     </main>
     <footer id="footer">
       Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
     </footer>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
     <script src="js/dbhelper.js"></script>
     <script src="js/indexController.js"></script>
     <script src="js/restaurant_info.js"></script>
