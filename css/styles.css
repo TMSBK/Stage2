@@ -380,7 +380,6 @@ form {
   width: 100%;
   margin: auto;
   margin-bottom: 65px;
-  /*border: 1px solid #d9d9d9;*/
   padding: 10px 0;
 }
 
@@ -430,15 +429,19 @@ form {
   margin: 5px 0 15px 0;
 }
 
-#nameInput {
-  margin-bottom: 10px;
-  height: 20px;
-}
-
 textarea {
   resize: none;
   height: 300px;
   margin: 0;
+}
+
+#svg {
+  width: 50%;
+}
+
+#sub-form {
+  display: flex;
+  justify-content: flex-start
 }
 
 #nameInput,
@@ -446,6 +449,12 @@ textarea {
   width: calc(100% - 18px);
   padding: 8px;
   border: 1px solid #d9d9d9;
+}
+
+#nameInput {
+  margin-bottom: 10px;
+  height: 20px;
+  width: 50%;
 }
 
 #submitButton {
@@ -469,7 +478,11 @@ textarea {
 #submitButton:active {
   box-shadow: 0 5px #666;
   transform: translateY(4px);
+}
 
+#fav {
+  fill: red;
+  cursor: pointer;
 }
 
 /* ====================== Media Queries ====================== */
