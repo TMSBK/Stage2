@@ -26,6 +26,9 @@ class DBHelper {
     open.onupgradeneeded = function() {
       var db = open.result;
       db.createObjectStore('RestaurantObjectStore', { keyPath: 'id' });
+      restaurants.forEach(function(restaurant) {
+        db.createObjectStore('ReviewsStore-' + restaurant.id, { keyPath: 'id' });
+      });
     };
 
     open.onerror = function(err) {
@@ -46,6 +49,44 @@ class DBHelper {
       };
     };
   }
+
+  static createReviewsStore(restaurantId, reviews) {
+    // Get the compatible IndexedDB version
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+
+    // Open (or create) the database
+    var open = indexedDB.open('RestaurantDataBase', 1);
+
+    // Create the schema
+    open.onupgradeneeded = function() {
+      var db = open.result;
+      db.createObjectStore('ReviewsStore-' + restaurantId, { keyPath: 'id' });
+    };
+
+
+    open.onerror = function(err) {
+      console.error('IndexeDB error: ' + err.target.errorCode);
+    };
+
+    open.onsuccess = function() {
+      // Start a new transaction
+      var db = open.result;
+      var tx = db.transaction('ReviewsStore-' + restaurantId, 'readwrite');
+      var store = tx.objectStore('ReviewsStore-' + restaurantId);
+
+      // Add the restaurant data
+      reviews.forEach(function(review) {
+        store.put(review);
+      });
+
+      // Close the db when the transaction is done
+      tx.oncomplete = function() {
+        db.close();
+      };
+    };
+  }
+
+
 
   static getCachedData(callback) {
     var restaurants = [];
@@ -72,6 +113,33 @@ class DBHelper {
     };
 
   }
+
+  static getCachedReviews(restaurantId, callback) {
+    var reviews = [];
+
+    // Get the compatible IndexedDB version
+    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+    var open = indexedDB.open('RestaurantDataBase', 1);
+
+    open.onsuccess = function() {
+      // Start a new transaction
+      var db = open.result;
+      var tx = db.transaction('ReviewsStore-' + restaurantId, 'readwrite');
+      var store = tx.objectStore('ReviewsStore-' + restaurantId);
+      var getData = store.getAll();
+
+      getData.onsuccess = function() {
+        callback(null, getData.result);
+      };
+
+      // Close the db when the transaction is done
+      tx.oncomplete = function() {
+        db.close();
+      };
+    };
+
+  }
+
 
   /**
   * Fetch all restaurants.
@@ -124,11 +192,13 @@ Fetching reviews
         callback(error, null);
       });
     } else {
-      console.log('pina');
+      
     }
   }
+  
 
   static fetchReviewsByRestaurantId(id, callback) {
+    if(navigator.onLine) {
     fetch(DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id, {
     })
     .then(response => response.json())
@@ -136,13 +206,22 @@ Fetching reviews
       reviews = reviews.sort(function(a, b) {
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
-      /*DBHelper.createReviewsStore(id, reviews);*/
+      DBHelper.createReviewsStore(id, reviews);
       callback(null, reviews);
     })
     .catch(err => {
       const error = `Request failed. Returned status of ${err.status}`;
       callback(error, null);
     });
+  } else {
+      console.log('Browser Offline - Using cached data!');
+      DBHelper.getCachedReviews((error, id, reviews) => {
+            console.log('lófasz');
+            callback(null, reviews);
+
+      });
+
+  }
   }
 
   static addRestaurantToFavorites(restaurantId, isFav, callback) {
