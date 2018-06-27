@@ -215,8 +215,7 @@ Fetching reviews
     });
   } else {
       console.log('Browser Offline - Using cached data!');
-      DBHelper.getCachedReviews((error, id, reviews) => {
-            console.log('lófasz');
+      DBHelper.getCachedReviews(id, (error, reviews) => {
             callback(null, reviews);
 
       });
