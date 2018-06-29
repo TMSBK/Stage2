@@ -13,7 +13,7 @@ class DBHelper {
   }
 
   /** 
-   * For the indexedDB I used snippets and ideas from here: https://github.com/udacity/mws-restaurant-stage-3/pull/3/files 
+   * For the indexedDB and fetching I used snippets and ideas from here: https://github.com/udacity/mws-restaurant-stage-3/pull/3/files 
    * Author: Sharynne Azhar
   **/
 
@@ -85,8 +85,6 @@ class DBHelper {
       };
     };
   }
-
-
 
   static getCachedData(callback) {
     var restaurants = [];
@@ -199,7 +197,7 @@ Fetching reviews
 
   static fetchReviewsByRestaurantId(id, callback) {
     if(navigator.onLine) {
-    fetch(DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id, {
+      fetch(DBHelper.DATABASE_URL + '/reviews/?restaurant_id=' + id, {
     })
     .then(response => response.json())
     .then(reviews => {
@@ -213,15 +211,19 @@ Fetching reviews
       const error = `Request failed. Returned status of ${err.status}`;
       callback(error, null);
     });
-  } else {
+    } else {
       console.log('Browser Offline - Using cached data!');
       DBHelper.getCachedReviews(id, (error, reviews) => {
             callback(null, reviews);
 
       });
 
+    }
   }
-  }
+
+/**
+* Addig favorite restaurants
+*/
 
   static addRestaurantToFavorites(restaurantId, isFav, callback) {
     const url = DBHelper.DATABASE_URL + '/restaurants/' + restaurantId + '/?is_favorite=' + isFav;

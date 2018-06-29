@@ -4,6 +4,7 @@ var map;
 /**
  * Initialize Google map, called from HTML.
  */
+
 window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
@@ -21,8 +22,27 @@ window.initMap = () => {
 }
 
 /**
+ * Toggle map
+ */
+
+const toggleButton = document.getElementById('mapToggle');
+const gMap = document.getElementById('map-container');
+gMap.style.display = 'none'; 
+toggleButton.addEventListener('click', (e)=>{ 
+    e.preventDefault(); 
+    if(gMap.style.display==='none') { 
+        toggleButton.innerHTML = 'Hide Map';
+        gMap.style.display='block'; 
+    } else { 
+        toggleButton.innerHTML = 'Show Map';
+        gMap.style.display='none'; 
+    } 
+});
+
+/**
  * Get current restaurant from page URL.
  */
+
 fetchRestaurantFromURL = (callback) => {
   if (self.restaurant) { // restaurant already fetched!
     callback(null, self.restaurant);
@@ -44,6 +64,12 @@ fetchRestaurantFromURL = (callback) => {
     });
   }
 }
+
+/** 
+* For fetching I used snippets and ideas from here: https://github.com/udacity/mws-restaurant-stage-3/pull/3/files 
+* Author: Sharynne Azhar
+**/
+
 
 fetchReviewsFromURL = (callback) => {
   if (self.reviews) { // reviews already fetched!
@@ -92,13 +118,15 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
-  
-
   if (restaurant.is_favorite === 'false') {
     svg.innerHTML = '<svg id="fav" xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24"><path d="M12 9.229c.234-1.12 1.547-6.229 5.382-6.229 2.22 0 4.618 1.551 4.618 5.003 0 3.907-3.627 8.47-10 12.629-6.373-4.159-10-8.722-10-12.629 0-3.484 2.369-5.005 4.577-5.005 3.923 0 5.145 5.126 5.423 6.231zm-12-1.226c0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-7.962-9.648-9.028-12-3.737-2.338-5.262-12-4.27-12 3.737z"/></svg>';
   } else {
     svg.innerHTML = '<svg id="fav" xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24"><path d="M12 4.435c-1.989-5.399-12-4.597-12 3.568 0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-8.118-10-8.999-12-3.568z"/></svg>';
   }
+
+/* Lazyloads the images */
+  new LazyLoad();
+
 
   // fill operating hours
   if (restaurant.operating_hours) {
@@ -111,6 +139,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
+
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
   hours.setAttribute("aria-label","opening hours of the restaurant");
@@ -138,8 +167,9 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
+
 const fillReviewsHTML = (reviews = self.reviews) => {
-  /*console.log(reviews)*/
+  console.log(reviews)
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -163,6 +193,7 @@ const fillReviewsHTML = (reviews = self.reviews) => {
 /**
  * Create review HTML and add it to the webpage.
  */
+
 createReviewHTML = (review) => {
   const li = document.createElement('li');
   const name = document.createElement('p');
@@ -200,6 +231,7 @@ createReviewHTML = (review) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
+
 fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
@@ -210,6 +242,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
 /**
  * Get a parameter by name from page URL.
  */
+
 getParameterByName = (name, url) => {
   if (!url)
     url = window.location.href;
@@ -222,6 +255,8 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 };
+
+/* Creating comment form */
 
 let radioButtonValue = '';
 
@@ -241,7 +276,6 @@ function ratingTracker(radioButton) {
 }
 
 function handleFavorite(restaurant = self.restaurant) {
-
     const filledHeart = '<svg id="fav" xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24"><path d="M12 4.435c-1.989-5.399-12-4.597-12 3.568 0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-8.118-10-8.999-12-3.568z"/></svg>';
     const emptyHeart = '<svg id="fav" xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24"><path d="M12 9.229c.234-1.12 1.547-6.229 5.382-6.229 2.22 0 4.618 1.551 4.618 5.003 0 3.907-3.627 8.47-10 12.629-6.373-4.159-10-8.722-10-12.629 0-3.484 2.369-5.005 4.577-5.005 3.923 0 5.145 5.126 5.423 6.231zm-12-1.226c0 4.068 3.06 9.481 12 14.997 8.94-5.516 12-10.929 12-14.997 0-7.962-9.648-9.028-12-3.737-2.338-5.262-12-4.27-12 3.737z"/></svg>';
 
@@ -260,42 +294,83 @@ function handleFavorite(restaurant = self.restaurant) {
 
 svg.addEventListener('click', function() {
     handleFavorite();
-
 });
 
+let online_offline = '';
+
+if (navigator.onLine) {
+    online_offline = true;
+    console.log(online_offline);
+} else {
+    online_offline = false;
+    console.log(online_offline);
+}
+
+let review = '';
+let name = '';
+let comment = '';
+let rating = '';
+let id = '';
+
+window.addEventListener('offline', function(e) {
+    online_offline = false;
+    console.log(online_offline);
+}, false);
+
+/** 
+* For the posting I used snippets and ideas from here: https://github.com/udacity/mws-restaurant-stage-3/pull/3/files 
+* Author: Sharynne Azhar
+**/
 
 const makeReview = (restaurant = self.restaurant) => {
-
-  let name = document.getElementById('nameInput').value;
-  let comment = document.getElementById('comment').value;
-  let rating = radioButtonValue;
-  let id = restaurant.id;
-
-  if (name != '' && comment != '') {
-    let review = {
-      restaurant_id: id,
-      name: name,
-      rating: rating,
-      comments: comment,
-    };
-
-    fetch(DBHelper.DATABASE_URL + '/reviews', {
-      method: 'post',
-      body: JSON.stringify(review)
-    })
-    .then(response => response.json())
-    .catch(error => {
-      console.log('Something went wrong submitting your review');
-    });
-
-    window.location.reload();
-  }
-
-  return false;
+    name = document.getElementById('nameInput').value;
+    comment = document.getElementById('comment').value;
+    rating = radioButtonValue;
+    id = restaurant.id;
+    if (online_offline === true) {  
+        if (name != '' && comment != '') {
+            review = {
+                restaurant_id: id,
+                name: name,
+                rating: rating,
+                comments: comment,
+            };
+            fetch(DBHelper.DATABASE_URL + '/reviews', {
+                method: 'post',
+                body: JSON.stringify(review)
+            })
+                .then(response => response.json())
+                .catch(error => {
+                    console.log('Something went wrong submitting your review');
+                });
+            window.location.reload();
+        }
+    } else {
+        console.log('Offline!');
+        if (name != '' && comment != '') {
+            review = {
+                restaurant_id: id,
+                name: name,
+                rating: rating,
+                comments: comment,
+            };
+            return false;
+        }
+    }
 };
 
-/*function deleteReview(review_id) {
-      fetch(DBHelper.DATABASE_URL + '/reviews/' + review_id, {
-      method: 'delete',
-    });
-}*/
+window.addEventListener('online', function(e) {
+    online_offline = true;
+    if (name != '' && comment != '') {
+        fetch(DBHelper.DATABASE_URL + '/reviews', {
+            method: 'post',
+            body: JSON.stringify(review)
+        })
+            .then(response => response.json())
+            .catch(error => {
+                console.log('Something went wrong submitting your review');
+            });
+        window.location.reload();
+    }
+    return false;
+});

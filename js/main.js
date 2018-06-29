@@ -87,8 +87,27 @@ window.initMap = () => {
 };
 
 /**
+ * Toggle map
+ */
+
+const toggleButton = document.getElementById('mapToggle');
+const gMap = document.getElementById('map-container');
+gMap.style.display = 'none'; 
+toggleButton.addEventListener('click', (e)=>{ 
+    e.preventDefault(); 
+    if(gMap.style.display==='none') { 
+        toggleButton.innerHTML = 'Hide Map';
+        gMap.style.display='block'; 
+    } else { 
+        toggleButton.innerHTML = 'Show Map';
+        gMap.style.display='none'; 
+    } 
+});
+
+/**
  * Update page and map for current restaurants.
  */
+
 updateRestaurants = () => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
@@ -112,6 +131,7 @@ updateRestaurants = () => {
 /**
  * Clear current restaurants, their HTML and remove their map markers.
  */
+
 resetRestaurants = (restaurants) => {
   // Remove all restaurants
   self.restaurants = [];
@@ -127,17 +147,23 @@ resetRestaurants = (restaurants) => {
 /**
  * Create all restaurants HTML and add them to the webpage.
  */
+
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
+
+/* Lazyloads the images */
+
+  new LazyLoad();
   addMarkersToMap();
 };
 
 /**
  * Create restaurant HTML.
  */
+
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
@@ -179,6 +205,7 @@ createRestaurantHTML = (restaurant) => {
 /**
  * Add markers for current restaurants to the map.
  */
+ 
 addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
