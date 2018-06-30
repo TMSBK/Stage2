@@ -10,7 +10,7 @@ var babel = require('gulp-babel');
 var gutil = require('gutil'); // eslint-disable-line
  
  
-gulp.task('default', ['copy-html', 'copy-images', 'styles','lint', 'scripts-dist', 'scripts-dist-sw'], function(done) {
+gulp.task('default', ['copy-html', 'copy-images', 'styles','lint', 'scripts-dist', 'scripts-dist-sw', 'manifest-dist'], function(done) {
     gulp.watch('sass/**/*.scss', ['styles']);
     gulp.watch('js/**/*.js', ['lint']);
     gulp.watch('/*.html', ['copy-html']);
@@ -50,6 +50,15 @@ gulp.task('scripts-dist-sw', function() {
         .pipe(babel())
         /*.pipe(concat('min.js'))*/
         .pipe(uglify())
+        /*.on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })*/
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('manifest-dist', function() {
+    gulp.src('manifest.json')
+        /*.pipe(babel())*/
+        /*.pipe(concat('min.js'))*/
+        /*.pipe(uglify())*/
         /*.on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })*/
         .pipe(gulp.dest('dist'));
 });
