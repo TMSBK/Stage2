@@ -4,13 +4,13 @@ var autoprefixer = require('gulp-autoprefixer');
 var browserSync = require('browser-sync').create();
 var eslint = require('gulp-eslint');
 var jasmine = require('gulp-jasmine-phantom');
-var concat = require('gulp-concat');
+/*var concat = require('gulp-concat'); */
 let uglify = require('gulp-uglify-es').default;
 var babel = require('gulp-babel');
-var gutil = require('gutil');
+var gutil = require('gutil'); // eslint-disable-line
  
  
-gulp.task('default', ['copy-html', 'copy-images', 'styles','lint', 'scripts-dist'], function(done) {
+gulp.task('default', ['copy-html', 'copy-images', 'styles','lint', 'scripts-dist', 'scripts-dist-sw'], function(done) {
     gulp.watch('sass/**/*.scss', ['styles']);
     gulp.watch('js/**/*.js', ['lint']);
     gulp.watch('/*.html', ['copy-html']);
@@ -32,17 +32,26 @@ gulp.task('dist', [
 gulp.task('scripts', function() {
     gulp.src('js/**/*.js')
         .pipe(babel())
-        .pipe(concat('all.js'))
+        /*.pipe(concat('min.js'))*/
         .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('scripts-dist', function() {
     gulp.src('js/**/*.js')
         .pipe(babel())
-        .pipe(concat('all.js'))
+        /*.pipe(concat('min.js'))*/
         .pipe(uglify())
-        .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
+        /*.on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })*/
         .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('scripts-dist-sw', function() {
+    gulp.src('sw.js')
+        .pipe(babel())
+        /*.pipe(concat('min.js'))*/
+        .pipe(uglify())
+        /*.on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })*/
+        .pipe(gulp.dest('dist'));
 });
  
 gulp.task('lint', function() {
@@ -67,7 +76,7 @@ gulp.task('copy-html', function() {
  
 gulp.task('copy-images', function() {
     gulp.src('minimizedImages/*')
-        .pipe(gulp.dest('dist/img'));
+        .pipe(gulp.dest('dist/minimizedImages'));
 });
  
 gulp.task('styles', function() {

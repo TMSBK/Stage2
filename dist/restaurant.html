@@ -14,6 +14,7 @@
       <nav class="nav">
         <h1><a href="/">Restaurant Reviews</a></h1>
       </nav>
+      <button id="mapToggle">Show map</button>
       <nav aria-label="Breadcrumb">
         <ol id="breadcrumb">
           <li><a href="/" aria-current="page">Home</a></li>
@@ -32,16 +33,44 @@
         <table id="restaurant-hours" tabindex="0"></table>
       </section>
       <section id="reviews-container">
+        <form name="submitForm" onsubmit="return makeReview()">
+          <div id="sub-form">
+            <input name='name' id="nameInput" placeholder="Your name">
+            <div id="svg">
+            </div>
+          </div>
+          <textarea name='comments' placeholder="Your comment" id="comment"></textarea>
+          <div id="ratings">
+            <span id="1" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="1" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="2" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="2" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="3" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="3" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="4" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="4" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <span id="5" class="radioInputSpan">
+              <input name='rating' class="radioInput" type="radio" value="5" name="radioButton" onchange="ratingTracker(this)">
+            </span>
+            <p id="ratingSign">Rate the restaurant</p>
+          </div>
+          <button id="submitButton" type="submit">Submit</button>
+        </form>
         <ul id="reviews-list"  tabindex="0"></ul>
       </section>
     </main>
     <footer id="footer">
       Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
     </footer>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-lazyload/10.4.1/lazyload.min.js"></script>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
     <script src="js/dbhelper.js"></script>
-    <!--<script src="js/all.js"></script>-->
+    <script src="js/indexController.js"></script>
     <script src="js/restaurant_info.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCsvl1Oghd7gJbRqST-tTzxxkJtgUd1Cio&libraries=places&callback=initMap"></script>
-    <script src="js/indexController.js"></script>
   </body>
 </html>
