@@ -70,7 +70,6 @@ fetchRestaurantFromURL = (callback) => { // eslint-disable-line
 * Author: Sharynne Azhar
 **/
 
-
 fetchReviewsFromURL = (callback) => { // eslint-disable-line
     if (self.reviews) { // reviews already fetched!
         callback(null, self.reviews);
@@ -344,6 +343,7 @@ const makeReview = (restaurant = self.restaurant) => { // eslint-disable-line
                 });
             window.location.reload();
         }
+        return false;
     } else {
         console.log('Offline!'); // eslint-disable-line
         if (name != '' && comment != '') {
